@@ -21,23 +21,30 @@ rutas_predefinidas = {
     2021: np.array([[2.0, 1.5, 3.0, 2.5, 1.0, 4.0],
                     [3.0, 2.0, 1.0, 2.5, 3.0, 1.5],
                     [1.0, 3.0, 2.5, 1.5, 2.5, 3.0],
-                    [2.5, 4.0, 1.5, 2.0, 1.0, 2.0]])
+                    [2.5, 4.0, 1.5, 2.0, 1.0, 2.0]]),
+    2022: np.array([[1.5, 2.5, 3.0, 1.0, 2.0, 4.0],
+                    [3.0, 1.0, 2.0, 2.5, 1.5, 3.0],
+                    [2.0, 3.0, 1.5, 2.5, 1.0, 2.5],
+                    [1.5, 2.0, 3.0, 1.0, 4.0, 2.5]])
 }
 
-def calcular_ruta_optima_global(rutas_predefinidas, rutas_optimas):
+
+def calcular_ruta_optima_global(rutas_predefinidas):
     pesos_globales = []
 
-    # Obtener la ruta óptima de cada año
-    for año, ruta_optima in rutas_optimas.items():
-        matriz_año = rutas_predefinidas[año]
-        peso_optimo_año = np.sum(matriz_año * np.array(list(pesos_predefinidos.values())))
-        pesos_globales.append(peso_optimo_año)
+    # Calcular el total del peso de cada ruta por año
+    total_pesos = {}
+    for year, rutas_predefinidas_matriz in rutas_predefinidas.items():
+        total_pesos[year] = np.sum(rutas_predefinidas_matriz * np.array(list(pesos_predefinidos.values())), axis=1)
+
+    # Calcular el total del peso de cada ruta para cada año
+    total_pesos_rutas = np.sum(list(total_pesos.values()), axis=0)
 
     # Calcular la ruta óptima global
-    ruta_optima_global = np.argmin(pesos_globales) + 1
-    peso_optimo_global = pesos_globales[ruta_optima_global - 1]
+    ruta_optima_global = np.argmin(total_pesos_rutas) + 1
+    peso_optimo_global = total_pesos_rutas[ruta_optima_global - 1]
 
-    return ruta_optima_global, peso_optimo_global
+    return ruta_optima_global, peso_optimo_global, total_pesos
 
 
 @app.route('/', methods=['GET'])
@@ -100,22 +107,31 @@ def results():
     # Resolver el problema de asignación utilizando el método húngaro para el último año
     fila_indices_ultimo, columna_indices_ultimo = linear_sum_assignment(matriz)
 
-    # Imprimir la ruta más óptima y su peso para el último año
-    ruta_optima_ultimo = np.argmin(total_pesos_ultimo)
-    peso_optimo_ultimo = total_pesos_ultimo[ruta_optima_ultimo]
-
     # Calcular la ruta óptima global
-    rutas_optimas[2022] = ruta_optima_ultimo + 1
-    rutas_optimas = dict(sorted(rutas_optimas.items()))
-    peso_optimo_global = min(total_pesos_ultimo)
-    ruta_optima_global = np.argmin(total_pesos_ultimo) + 1
-    
+    peso_optimo_global = float('inf')
+    for rutas_predefinidas_matriz in rutas_predefinidas.values():
+        total_pesos = []
+        for i in range(4):
+            peso_ruta = np.sum(rutas_predefinidas_matriz[i] * np.array(list(pesos.values())))
+            total_pesos.append(peso_ruta)
+        peso_optimo_año = np.sum(total_pesos)
+        if peso_optimo_año < peso_optimo_global:
+            peso_optimo_global = peso_optimo_año
+            ruta_optima_global = np.argmin(total_pesos) + 1
+
     #ruta_optima_global, peso_optimo_global = calcular_ruta_optima_global(rutas_predefinidas, rutas_optimas)
 
+    # Obtener la ruta óptima del último año
+    ruta_optima_ultimo = rutas_optimas[2022] - 1
+    peso_optimo_ultimo = total_pesos_ultimo[ruta_optima_ultimo]
 
     return render_template('results.html', rutas_optimas=rutas_optimas,
-                           ruta_optima_global=ruta_optima_global, peso_optimo_global=peso_optimo_global)
+                           ruta_optima_global=ruta_optima_global, peso_optimo_global=peso_optimo_global,
+                           total_pesos=total_pesos, peso_optimo_ultimo=peso_optimo_ultimo)
+
+
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
