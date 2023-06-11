@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gráficos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Gráficos</h1>
+        <canvas id="bar-chart"></canvas>
+    </div>
+
+    <script>
+        // Obtener los datos para los gráficos
+        var labels = JSON.parse('{{ labels|safe }}');
+        var globalData = JSON.parse('{{ global_data|safe }}');
+        var ultimoData = JSON.parse('{{ ultimo_data|safe }}');
+
+        // Crear el gráfico de barras utilizando Chart.js
+        var ctx = document.getElementById('bar-chart').getContext('2d');
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Peso de la ruta óptima por año',
+                    data: globalData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Peso de la ruta óptima del último año',
+                    data: ultimoData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

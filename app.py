@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import numpy as np
 from scipy.optimize import linear_sum_assignment
+import json
+
+
 
 app = Flask(__name__)
 
@@ -28,6 +31,14 @@ rutas_predefinidas = {
                     [1.5, 2.0, 3.0, 1.0, 4.0, 2.5]])
 }
 
+def get_chart_data():
+    labels = ['2020', '2021', '2022']
+    global_data = [10, 20, 30]
+    ultimo_data = [5, 15, 25]
+
+    return labels, global_data, ultimo_data
+
+
 
 def calcular_ruta_optima_global(rutas_predefinidas):
     pesos_globales = []
@@ -47,14 +58,24 @@ def calcular_ruta_optima_global(rutas_predefinidas):
     return ruta_optima_global, peso_optimo_global, total_pesos
 
 
+
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html', pesos_predefinidos=pesos_predefinidos)
+
+@app.route('/charts', methods=['GET'])
+def charts():
+    labels, global_data, ultimo_data = get_chart_data()
+
+    return render_template('charts.html', labels=json.dumps(labels),
+                           global_data=json.dumps(global_data), ultimo_data=json.dumps(ultimo_data))
+
 
 
 @app.route('/results', methods=['POST'])
 def results():
     pesos = {}
+
 
     # Obtener los pesos para el último año ingresados por el usuario
     for entrada in pesos_predefinidos:
@@ -128,8 +149,6 @@ def results():
     return render_template('results.html', rutas_optimas=rutas_optimas,
                            ruta_optima_global=ruta_optima_global, peso_optimo_global=peso_optimo_global,
                            total_pesos=total_pesos, peso_optimo_ultimo=peso_optimo_ultimo)
-
-
 
 
 if __name__ == '__main__':
