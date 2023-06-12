@@ -3,8 +3,6 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 import json
 
-
-
 app = Flask(__name__)
 
 pesos_predefinidos = {
@@ -39,29 +37,27 @@ def get_chart_data():
     return labels, global_data, ultimo_data
 
 
-
 def calcular_ruta_optima_global(rutas_predefinidas):
-    pesos_globales = []
+    pesos = np.array(list(pesos_predefinidos.values()))
 
-    # Calcular el total del peso de cada ruta por año
-    total_pesos = {}
-    for year, rutas_predefinidas_matriz in rutas_predefinidas.items():
-        total_pesos[year] = np.sum(rutas_predefinidas_matriz * np.array(list(pesos_predefinidos.values())), axis=1)
+    total_pesos_rutas = []
+    for rutas_predefinidas_matriz in rutas_predefinidas.values():
+        cost_matrix = rutas_predefinidas_matriz.copy()
+        for i in range(cost_matrix.shape[0]):
+            cost_matrix[i] *= pesos
+        row_indices, col_indices = linear_sum_assignment(cost_matrix)
+        total_pesos_rutas.append(cost_matrix[row_indices, col_indices].sum())
 
-    # Calcular el total del peso de cada ruta para cada año
-    total_pesos_rutas = np.sum(list(total_pesos.values()), axis=0)
-
-    # Calcular la ruta óptima global
     ruta_optima_global = np.argmin(total_pesos_rutas) + 1
     peso_optimo_global = total_pesos_rutas[ruta_optima_global - 1]
 
-    return ruta_optima_global, peso_optimo_global, total_pesos
-
+    return ruta_optima_global, peso_optimo_global, total_pesos_rutas
 
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html', pesos_predefinidos=pesos_predefinidos)
+
 
 @app.route('/charts', methods=['GET'])
 def charts():
@@ -71,11 +67,9 @@ def charts():
                            global_data=json.dumps(global_data), ultimo_data=json.dumps(ultimo_data))
 
 
-
 @app.route('/results', methods=['POST'])
 def results():
     pesos = {}
-
 
     # Obtener los pesos para el último año ingresados por el usuario
     for entrada in pesos_predefinidos:
@@ -115,7 +109,6 @@ def results():
         for i in range(4):
             peso_ruta = np.sum(rutas_predefinidas_matriz[i] * np.array(list(pesos.values())))
             total_pesos.append(peso_ruta)
-        fila_indices, columna_indices = linear_sum_assignment(rutas_predefinidas_matriz)
         ruta_optima = np.argmin(total_pesos)
         rutas_optimas[year] = ruta_optima + 1
 
@@ -125,32 +118,17 @@ def results():
         peso_ruta = np.sum(matriz[i] * np.array(list(pesos.values())))
         total_pesos_ultimo.append(peso_ruta)
 
-    # Resolver el problema de asignación utilizando el método húngaro para el último año
-    fila_indices_ultimo, columna_indices_ultimo = linear_sum_assignment(matriz)
-
     # Calcular la ruta óptima global
-    peso_optimo_global = float('inf')
-    for rutas_predefinidas_matriz in rutas_predefinidas.values():
-        total_pesos = []
-        for i in range(4):
-            peso_ruta = np.sum(rutas_predefinidas_matriz[i] * np.array(list(pesos.values())))
-            total_pesos.append(peso_ruta)
-        peso_optimo_año = np.sum(total_pesos)
-        if peso_optimo_año < peso_optimo_global:
-            peso_optimo_global = peso_optimo_año
-            ruta_optima_global = np.argmin(total_pesos) + 1
-
-    #ruta_optima_global, peso_optimo_global = calcular_ruta_optima_global(rutas_predefinidas, rutas_optimas)
+    ruta_optima_global, peso_optimo_global, total_pesos_rutas = calcular_ruta_optima_global(rutas_predefinidas)
 
     # Obtener la ruta óptima del último año
-    ruta_optima_ultimo = rutas_optimas[2022] - 1
-    peso_optimo_ultimo = total_pesos_ultimo[ruta_optima_ultimo]
+    ruta_optima_ultimo, peso_optimo_ultimo, _ = calcular_ruta_optima_global({2023: matriz})
 
     return render_template('results.html', rutas_optimas=rutas_optimas,
                            ruta_optima_global=ruta_optima_global, peso_optimo_global=peso_optimo_global,
-                           total_pesos=total_pesos, peso_optimo_ultimo=peso_optimo_ultimo)
+                           ruta_optima_ultimo=ruta_optima_ultimo, peso_optimo_ultimo=peso_optimo_ultimo,
+                           total_pesos_rutas=total_pesos_rutas, total_pesos = total_pesos)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-

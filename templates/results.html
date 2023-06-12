@@ -3,6 +3,17 @@
 <head>
     <title>Resultados</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 10vh;
+        }
+        .button-spacing {
+            margin-right: 20px; 
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -36,7 +47,12 @@
             </tbody>
         </table>
     </div>
-    <a href="/charts">Ver gráficos</a>
 
+    <div class="center-container">
+        <a href="#" onclick="history.go(-1)" class="btn btn-primary button-spacing">Volver</a>
+        <a href="/charts" class="btn btn-primary">Ver gráficos</a>
+    </div>
+
+    
 </body>
 </html>
