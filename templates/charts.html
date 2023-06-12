@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h1>Gráficos</h1>
-        <canvas id="bar-chart"></canvas>
+        <canvas id="scatter-chart"></canvas>
         <a href="#" onclick="history.go(-1)" class="btn btn-primary">Volver</a>
     </div>
 
@@ -18,28 +18,24 @@
         var globalData = JSON.parse('{{ global_data|safe }}');
         var ultimoData = JSON.parse('{{ ultimo_data|safe }}');
 
-        // Crear el gráfico de barras utilizando Chart.js
-        var ctx = document.getElementById('bar-chart').getContext('2d');
-        var barChart = new Chart(ctx, {
-            type: 'bar',
+        // Colores para cada año
+        var colors = ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'];
+
+        // Crear el gráfico de dispersión utilizando Chart.js
+        var ctx = document.getElementById('scatter-chart').getContext('2d');
+        var scatterChart = new Chart(ctx, {
+            type: 'scatter',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Peso de la ruta óptima por año',
-                    data: globalData,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Peso de la ruta óptima del último año',
-                    data: ultimoData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
+                datasets: []
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 2018,
+                        max: 2020
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
@@ -49,6 +45,43 @@
                 }
             }
         });
+
+        // Agregar datos para cada ruta y año
+        for (var i = 0; i < labels.length; i++) {
+            var dataset = {
+                label: 'Ruta ' + (i + 1),
+                data: [],
+                backgroundColor: colors[i % colors.length],
+                borderColor: 'rgba(0, 0, 0, 1)',
+                pointRadius: 8,
+                pointHoverRadius: 10
+            };
+
+            for (var j = 0; j < labels.length; j++) {
+                dataset.data.push({ x: labels[j], y: globalData[i][j] });
+            }
+
+            scatterChart.data.datasets.push(dataset);
+        }
+
+        // Agregar datos para el último año
+        var ultimoDataset = {
+            label: 'Peso de la ruta óptima del último año',
+            data: [],
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(0, 0, 0, 1)',
+            pointRadius: 8,
+            pointHoverRadius: 10
+        };
+
+        for (var k = 0; k < labels.length; k++) {
+            ultimoDataset.data.push({ x: labels[k], y: ultimoData[k] });
+        }
+
+        scatterChart.data.datasets.push(ultimoDataset);
+
+        // Actualizar el gráfico
+        scatterChart.update();
     </script>
 </body>
 </html>

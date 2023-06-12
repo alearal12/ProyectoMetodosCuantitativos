@@ -6,31 +6,33 @@ import json
 app = Flask(__name__)
 
 pesos_predefinidos = {
-    'derrumbes': 1.0,
-    'gravedad de accidente': 2.0,
-    'duración': 1.5,
-    'estado del tiempo': 1.0,
+    'derrumbes': 8.0,
+    'gravedad de accidente': 6.0,
+    'duración': 5.5,
+    'estado del tiempo': 7.0,
     'congestión vial': 1.0,
-    'estado de la carretera': 1.0
+    'estado de la carretera': 2.0
 }
 
 rutas_predefinidas = {
-    2020: np.array([[1.0, 2.0, 3.0, 4.0, 2.5, 3.0],
-                    [3.0, 1.5, 2.5, 1.0, 4.0, 2.0],
-                    [2.5, 3.0, 1.0, 2.0, 1.5, 2.5],
-                    [1.5, 2.0, 1.5, 3.0, 2.0, 4.0]]),
-    2021: np.array([[2.0, 1.5, 3.0, 2.5, 1.0, 4.0],
-                    [3.0, 2.0, 1.0, 2.5, 3.0, 1.5],
-                    [1.0, 3.0, 2.5, 1.5, 2.5, 3.0],
-                    [2.5, 4.0, 1.5, 2.0, 1.0, 2.0]]),
-    2022: np.array([[1.5, 2.5, 3.0, 1.0, 2.0, 4.0],
-                    [3.0, 1.0, 2.0, 2.5, 1.5, 3.0],
-                    [2.0, 3.0, 1.5, 2.5, 1.0, 2.5],
-                    [1.5, 2.0, 3.0, 1.0, 4.0, 2.5]])
+    2018: np.array([[32, 1792, 3.0, 7032, 3, 2],
+                    [24, 812, 2.5, 7032, 2, 2],
+                    [28, 179, 1.0, 7032, 1, 1],
+                    [12, 472, 1.5, 7032, 1, 1]]),
+    
+    2019: np.array([[29, 1733, 3.0, 5705, 3, 2],
+                    [20, 582, 1.0, 5705, 2, 2],
+                    [22, 170, 2.5, 5705, 1, 1],
+                    [25, 329, 1.5, 5705, 1, 1]]),
+    
+    2020: np.array([[36, 1261, 3.0, 4646, 3, 2],
+                    [30, 403, 2.0, 4646, 2, 2],
+                    [24, 120, 1.5, 4646, 1, 1],
+                    [15, 254, 3.0, 4646, 1, 1]])
 }
 
 def get_chart_data():
-    labels = ['2020', '2021', '2022']
+    labels = ['2018', '2019', '2020']
     global_data = [10, 20, 30]
     ultimo_data = [5, 15, 25]
 
@@ -121,8 +123,15 @@ def results():
     # Calcular la ruta óptima global
     ruta_optima_global, peso_optimo_global, total_pesos_rutas = calcular_ruta_optima_global(rutas_predefinidas)
 
+
     # Obtener la ruta óptima del último año
-    ruta_optima_ultimo, peso_optimo_ultimo, _ = calcular_ruta_optima_global({2023: matriz})
+    pesos_ultimo = np.array(list(pesos.values()))
+    cost_matrix = matriz.copy()
+    for i in range(cost_matrix.shape[0]):
+        cost_matrix[i] *= pesos_ultimo
+    row_indices, col_indices = linear_sum_assignment(cost_matrix)
+    ruta_optima_ultimo = col_indices[0] + 1
+    peso_optimo_ultimo = cost_matrix[row_indices, col_indices].sum()
 
     return render_template('results.html', rutas_optimas=rutas_optimas,
                            ruta_optima_global=ruta_optima_global, peso_optimo_global=peso_optimo_global,
