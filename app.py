@@ -33,10 +33,11 @@ rutas_predefinidas = {
 
 def get_chart_data():
     labels = ['2018', '2019', '2020']
-    global_data = [10, 20, 30]
+    global_data = [np.sum(rutas_predefinidas[2018]), np.sum(rutas_predefinidas[2019]), np.sum(rutas_predefinidas[2020])]
     ultimo_data = [5, 15, 25]
 
     return labels, global_data, ultimo_data
+
 
 
 def calcular_ruta_optima_global(rutas_predefinidas):

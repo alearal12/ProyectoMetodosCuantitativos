@@ -14,12 +14,16 @@
 
     <script>
         // Obtener los datos para los gráficos
-        var labels = JSON.parse('{{ labels|safe }}');
-        var globalData = JSON.parse('{{ global_data|safe }}');
-        var ultimoData = JSON.parse('{{ ultimo_data|safe }}');
+        var labels = [2018, 2019, 2020, 2021];
+        var rutas = ['Ruta 1', 'Ruta 2', 'Ruta 3', 'Ruta 4'];
+        var pesos = [40399.5, 35197.0, 33445.25, 14322.5]; // Agrega el peso correspondiente al año 2021
 
-        // Colores para cada año
-        var colors = ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'];
+        // Generar una lista de colores aleatorios
+        var colors = [];
+        for (var i = 0; i < labels.length; i++) {
+            var color = 'rgba(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',0.5)';
+            colors.push(color);
+        }
 
         // Crear el gráfico de dispersión utilizando Chart.js
         var ctx = document.getElementById('scatter-chart').getContext('2d');
@@ -33,55 +37,44 @@
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        min: 2018,
-                        max: 2020
-                    },
-                    y: {
-                        beginAtZero: true,
                         ticks: {
                             stepSize: 1
-                        }
+                        },
+                        min: 2018,
+                        max: 2021
+                    },
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
         });
 
-        // Agregar datos para cada ruta y año
-        for (var i = 0; i < labels.length; i++) {
+        // Agregar datos al gráfico
+        for (var j = 0; j < rutas.length; j++) {
             var dataset = {
-                label: 'Ruta ' + (i + 1),
+                label: rutas[j],
                 data: [],
-                backgroundColor: colors[i % colors.length],
+                backgroundColor: colors[j % colors.length],
                 borderColor: 'rgba(0, 0, 0, 1)',
                 pointRadius: 8,
                 pointHoverRadius: 10
             };
 
-            for (var j = 0; j < labels.length; j++) {
-                dataset.data.push({ x: labels[j], y: globalData[i][j] });
+            for (var k = 0; k < labels.length; k++) {
+                dataset.data.push({ x: labels[k], y: pesos[k] });
             }
 
             scatterChart.data.datasets.push(dataset);
         }
 
-        // Agregar datos para el último año
-        var ultimoDataset = {
-            label: 'Peso de la ruta óptima del último año',
-            data: [],
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(0, 0, 0, 1)',
-            pointRadius: 8,
-            pointHoverRadius: 10
-        };
-
-        for (var k = 0; k < labels.length; k++) {
-            ultimoDataset.data.push({ x: labels[k], y: ultimoData[k] });
-        }
-
-        scatterChart.data.datasets.push(ultimoDataset);
-
         // Actualizar el gráfico
         scatterChart.update();
+
+        // Función para generar un número entero aleatorio entre min y max (ambos incluidos)
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
     </script>
 </body>
 </html>
