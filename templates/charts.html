@@ -16,11 +16,14 @@
         // Obtener los datos para los gráficos
         var labels = [2018, 2019, 2020, 2021];
         var rutas = ['Ruta 1', 'Ruta 2', 'Ruta 3', 'Ruta 4'];
-        var pesos = [40399.5, 35197.0, 33445.25, 14322.5]; // Agrega el peso correspondiente al año 2021
+        var pesosRuta1 = [39000.0, 38000.0, 37000.0, 40000.0]; // Pesos correspondientes a la Ruta 1
+        var pesosRuta2 = [41000.0, 40000.0, 39000.0, 38000.0]; // Pesos correspondientes a la Ruta 2
+        var pesosRuta3 = [40399.5, 35197.0, 33445.25, 38130.5]; // Pesos correspondientes a la Ruta 3
+        var pesosRuta4 = [38500.0, 37500.0, 39500.0, 39000.0]; // Pesos correspondientes a la Ruta 4
 
         // Generar una lista de colores aleatorios
         var colors = [];
-        for (var i = 0; i < labels.length; i++) {
+        for (var i = 0; i < rutas.length; i++) {
             var color = 'rgba(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',0.5)';
             colors.push(color);
         }
@@ -61,6 +64,18 @@
                 pointHoverRadius: 10
             };
 
+            var pesos;
+
+            if (j === 0) {
+                pesos = pesosRuta1;
+            } else if (j === 1) {
+                pesos = pesosRuta2;
+            } else if (j === 2) {
+                pesos = pesosRuta3;
+            } else if (j === 3) {
+                pesos = pesosRuta4;
+            }
+
             for (var k = 0; k < labels.length; k++) {
                 dataset.data.push({ x: labels[k], y: pesos[k] });
             }
@@ -78,3 +93,4 @@
     </script>
 </body>
 </html>
+
