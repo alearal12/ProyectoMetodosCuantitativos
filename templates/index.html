@@ -3,12 +3,67 @@
 <head>
     <title>Análisis de Ruta Óptima</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .navbar {
+            background: linear-gradient(to right, #0a2e36, #1f7a8c);
+        }
+
+        .navbar-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/background.png') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .container {
+            margin-top: 50px;
+            max-width: 600px; /* Adjust the width as per your preference */
+            padding: 0 15px; /* Add padding to the left and right sides */
+            background-color: rgba(255, 255, 255, 0.8); /* Add background color with opacity */
+            border-radius: 10px; /* Add border radius */
+            text-align: center; /* Center align the content */
+        }
+
+        .card {
+            margin-bottom: 20px;
+            display: none; /* Hide all cards initially */
+        }
+
+        .card.active {
+            display: block; /* Show active card */
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .next-button,
+        .previous-button,
+        #submit-button {
+            display: none; /* Hide buttons initially */
+        }
+    </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand navbar-logo" href="#"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Your Logo"></a>
+</nav>
+
 <div class="container">
-    <h1>Análisis de Ruta Óptima</h1>
+    <h1 style="text-align: center;">Análisis de Ruta Óptima</h1>
     <form action="/results" method="POST">
-        <h3>Pesos:</h3>
+        <h3 style="text-align: center;">Pesos:</h3>
         {% for entrada, peso_predefinido in pesos_predefinidos.items() %}
         <div class="form-group">
             <label for="{{ entrada }}">{{ entrada }}:</label>
@@ -17,18 +72,142 @@
         </div>
         {% endfor %}
 
-        {% for i in range(1, 5) %}
-        <h3>Ruta {{ i }} (Último año):</h3>
-        {% for entrada in pesos_predefinidos %}
-        <div class="form-group">
-            <label for="ruta{{ i }}_{{ entrada }}">{{ entrada }} (Ruta {{ i }}):</label>
-            <input type="number" step="0.1" class="form-control" id="ruta{{ i }}_{{ entrada }}"
-                   name="ruta{{ i }}_{{ entrada }}" required>
+        <h3 style="text-align: center;">Rutas (Último año):</h3>
+        <div class="card active" id="card-1">
+            <div class="card-header">
+                Ruta 1
+            </div>
+            <div class="card-body">
+                {% for entrada in pesos_predefinidos %}
+                <div class="form-group">
+                    <label for="ruta1_{{ entrada }}">{{ entrada }} (Ruta 1):</label>
+                    <input type="number" step="0.1" class="form-control" id="ruta1_{{ entrada }}"
+                           name="ruta1_{{ entrada }}" required>
+                </div>
+                {% endfor %}
+                <div class="button-container">
+                    <button type="button" class="btn btn-primary previous-button" id="previous-button-1">Anterior</button>
+                    <button type="button" class="btn btn-primary next-button" id="next-button-1">Siguiente</button>
+                </div>
+            </div>
         </div>
-        {% endfor %}
-        {% endfor %}
 
-        <button type="submit" class="btn btn-primary">Calcular Ruta Óptima</button>
+        <div class="card" id="card-2">
+            <div class="card-header">
+                Ruta 2
+            </div>
+            <div class="card-body">
+                {% for entrada in pesos_predefinidos %}
+                <div class="form-group">
+                    <label for="ruta2_{{ entrada }}">{{ entrada }} (Ruta 2):</label>
+                    <input type="number" step="0.1" class="form-control" id="ruta2_{{ entrada }}"
+                           name="ruta2_{{ entrada }}" required>
+                </div>
+                {% endfor %}
+                <div class="button-container">
+                    <button type="button" class="btn btn-primary previous-button" id="previous-button-2">Anterior</button>
+                    <button type="button" class="btn btn-primary next-button" id="next-button-2">Siguiente</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="card-3">
+            <div class="card-header">
+                Ruta 3
+            </div>
+            <div class="card-body">
+                {% for entrada in pesos_predefinidos %}
+                <div class="form-group">
+                    <label for="ruta3_{{ entrada }}">{{ entrada }} (Ruta 3):</label>
+                    <input type="number" step="0.1" class="form-control" id="ruta3_{{ entrada }}"
+                           name="ruta3_{{ entrada }}" required>
+                </div>
+                {% endfor %}
+                <div class="button-container">
+                    <button type="button" class="btn btn-primary previous-button" id="previous-button-3">Anterior</button>
+                    <button type="button" class="btn btn-primary next-button" id="next-button-3">Siguiente</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="card-4">
+            <div class="card-header">
+                Ruta 4
+            </div>
+            <div class="card-body">
+                {% for entrada in pesos_predefinidos %}
+                <div class="form-group">
+                    <label for="ruta4_{{ entrada }}">{{ entrada }} (Ruta 4):</label>
+                    <input type="number" step="0.1" class="form-control" id="ruta4_{{ entrada }}"
+                           name="ruta4_{{ entrada }}" required>
+                </div>
+                {% endfor %}
+                <div class="button-container">
+                    <button type="button" class="btn btn-primary previous-button" id="previous-button-4">Anterior</button>
+                    <button type="submit" class="btn btn-primary" id="submit-button">Calcular Ruta Óptima</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const cards = document.querySelectorAll('.card');
+            const nextButtons = document.querySelectorAll('.next-button');
+            const previousButtons = document.querySelectorAll('.previous-button');
+            let currentCardIndex = 0;
+
+            function showCard(cardIndex) {
+                cards.forEach(function (card, index) {
+                    if (index === cardIndex) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+            }
+
+            function updateButtonVisibility() {
+                if (currentCardIndex === 0) {
+                    previousButtons.forEach(function (button) {
+                        button.style.display = 'none';
+                    });
+                } else {
+                    previousButtons.forEach(function (button) {
+                        button.style.display = 'block';
+                    });
+                }
+
+                if (currentCardIndex === cards.length - 1) {
+                    nextButtons.forEach(function (button) {
+                        button.style.display = 'none';
+                    });
+                    document.getElementById('submit-button').style.display = 'block';
+                } else {
+                    nextButtons.forEach(function (button) {
+                        button.style.display = 'block';
+                    });
+                    document.getElementById('submit-button').style.display = 'none';
+                }
+            }
+
+            nextButtons.forEach(function (button, index) {
+                button.addEventListener('click', function () {
+                    currentCardIndex = index + 1;
+                    showCard(currentCardIndex);
+                    updateButtonVisibility();
+                });
+            });
+
+            previousButtons.forEach(function (button, index) {
+                button.addEventListener('click', function () {
+                    currentCardIndex = index - 1;
+                    showCard(currentCardIndex);
+                    updateButtonVisibility();
+                });
+            });
+
+            showCard(currentCardIndex);
+            updateButtonVisibility();
+        </script>
     </form>
 </div>
 </body>

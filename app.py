@@ -3,7 +3,8 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+
 
 pesos_predefinidos = {
     'derrumbes': 8.0,
