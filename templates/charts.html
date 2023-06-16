@@ -4,8 +4,41 @@
     <title>Gráficos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(to right, #0a2e36, #1f7a8c);
+        }
+
+        .navbar-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/background.png') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .container {
+            margin-top: 40px;
+            max-width: 1150px; /* Adjust the width as per your preference */
+            padding: 10px; /* Add padding to the container */
+            background-color: white; /* Set a white background color */
+            border-radius: 10px; /* Add border radius */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+        }
+        
+        h1 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand navbar-logo" href="#"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Your Logo"></a>
+    </nav>
     <div class="container">
         <h1>Gráficos</h1>
         <canvas id="scatter-chart"></canvas>
@@ -21,12 +54,13 @@
         var pesosRuta3 = [40399.5, 35197.0, 33445.25, 38130.5]; // Pesos correspondientes a la Ruta 3
         var pesosRuta4 = [38500.0, 37500.0, 39500.0, 39000.0]; // Pesos correspondientes a la Ruta 4
 
-        // Generar una lista de colores aleatorios
-        var colors = [];
-        for (var i = 0; i < rutas.length; i++) {
-            var color = 'rgba(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',0.5)';
-            colors.push(color);
-        }
+        // Definir colores para cada ruta
+        var colors = {
+            'Ruta 1': 'rgba(54, 162, 235, 0.5)', // Blue
+            'Ruta 2': 'rgba(255, 99, 132, 0.5)', // Red
+            'Ruta 3': 'rgba(75, 192, 192, 0.5)', // Green
+            'Ruta 4': 'rgba(255, 206, 86, 0.5)' // Yellow
+        };
 
         // Crear el gráfico de dispersión utilizando Chart.js
         var ctx = document.getElementById('scatter-chart').getContext('2d');
@@ -44,10 +78,18 @@
                             stepSize: 1
                         },
                         min: 2018,
-                        max: 2021
+                        max: 2021,
+                        title: {
+                            display: true,
+                            text: 'Años'
+                        }
                     },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Pesos'
+                        }
                     }
                 }
             }
@@ -58,10 +100,12 @@
             var dataset = {
                 label: rutas[j],
                 data: [],
-                backgroundColor: colors[j % colors.length],
-                borderColor: 'rgba(0, 0, 0, 1)',
+                backgroundColor: colors[rutas[j]],
+                borderColor: colors[rutas[j]],
                 pointRadius: 8,
-                pointHoverRadius: 10
+                pointHoverRadius: 10,
+                showLine: true,
+                fill: false
             };
 
             var pesos;
@@ -85,12 +129,6 @@
 
         // Actualizar el gráfico
         scatterChart.update();
-
-        // Función para generar un número entero aleatorio entre min y max (ambos incluidos)
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
     </script>
 </body>
 </html>
-

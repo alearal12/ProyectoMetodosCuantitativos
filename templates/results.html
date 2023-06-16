@@ -13,9 +13,44 @@
         .button-spacing {
             margin-right: 20px; 
         }
+        .navbar {
+            background: linear-gradient(to right, #0a2e36, #1f7a8c);
+        }
+
+        .navbar-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/background.png') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 800px; /* Adjust the width as per your preference */
+            padding: 20px; /* Add padding to the container */
+            background-color: white; /* Set a white background color */
+            border-radius: 10px; /* Add border radius */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+        }
+        
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            margin: 0 auto; /* Center align the table */
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand navbar-logo" href="#"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Your Logo"></a>
+    </nav>
     <div class="container">
         <h1>Rutas Óptimas</h1>
         <table class="table">

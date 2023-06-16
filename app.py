@@ -7,12 +7,12 @@ app = Flask(__name__, static_url_path='/static')
 
 
 pesos_predefinidos = {
-    'derrumbes': 8.0,
-    'gravedad de accidente': 6.0,
-    'duración': 5.5,
-    'estado del tiempo': 7.0,
-    'congestión vial': 1.0,
-    'estado de la carretera': 2.0
+    'Derrumbes (Cantidad)': 8.0,
+    'Gravedad de accidente (Cantidad)': 6.0,
+    'Duración (en horas)': 5.5,
+    'Estado del tiempo (Cantidad)': 7.0,
+    'Congestión vial (Alta, Media, Baja)': 1.0,
+    'Estado de la carretera (Buena, Normal, Mala)': 2.0
 }
 
 rutas_predefinidas = {
